@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediScope AI | Smart Medical Screening</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body data-page="home">
+    <div class="background-orb orb-one"></div>
+    <div class="background-orb orb-two"></div>
+    <div class="background-grid"></div>
+
+    <main class="auth-layout">
+        <section class="hero-panel">
+            <p class="eyebrow">AI-Assisted Medical Workflow</p>
+            <h1>MediScope AI</h1>
+            <p class="hero-copy">
+                One modern portal for register, login, disease prediction, food guidance, medicine discussion points,
+                and downloadable medical reports.
+            </p>
+
+            <div class="feature-list">
+                <article class="feature-card">
+                    <h2>Symptom prediction</h2>
+                    <p>Weighted screening shows possible conditions even when only a few symptoms are entered.</p>
+                </article>
+                <article class="feature-card">
+                    <h2>Food and medicine guidance</h2>
+                    <p>Every result includes practical food suggestions and medication caution notes.</p>
+                </article>
+                <article class="feature-card">
+                    <h2>Download final report</h2>
+                    <p>Generate a clean medical summary that can be saved or shared with a clinician.</p>
+                </article>
+            </div>
+
+            <div class="safety-note">
+                <strong>Important:</strong> this tool is for screening support only. It is not a confirmed diagnosis and must not replace emergency care.
+            </div>
+        </section>
+
+        <section class="auth-panel" data-auth-shell data-active-tab="{{ active_tab }}">
+            <div class="panel-header">
+                <div>
+                    <p class="eyebrow">Secure Access</p>
+                    <h2>Open the portal</h2>
+                </div>
+                <p>Use an account to save reports and return to the dashboard anytime.</p>
+            </div>
+
+            <div class="auth-toggle">
+                <button type="button" class="auth-toggle-btn" data-auth-tab="login">Login</button>
+                <button type="button" class="auth-toggle-btn" data-auth-tab="register">Register</button>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-stack">
+                        {% for category, message in messages %}
+                            <div class="flash flash-{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <div class="auth-pane" data-auth-pane="login">
+                <form action="{{ url_for('login') }}" method="post" class="auth-form">
+                    <label>
+                        <span>Email address</span>
+                        <input type="email" name="email" placeholder="you@example.com" required>
+                    </label>
+                    <label>
+                        <span>Password</span>
+                        <input type="password" name="password" placeholder="Enter your password" required>
+                    </label>
+                    <button type="submit" class="primary-btn full-width">Login to Dashboard</button>
+                </form>
+                <p class="inline-switch">
+                    Need an account?
+                    <button type="button" class="text-btn" data-auth-tab-trigger="register">Create one</button>
+                </p>
+            </div>
+
+            <div class="auth-pane" data-auth-pane="register">
+                <form action="{{ url_for('register') }}" method="post" class="auth-form">
+                    <label>
+                        <span>Full name</span>
+                        <input type="text" name="full_name" placeholder="Patient or admin name" required>
+                    </label>
+                    <label>
+                        <span>Email address</span>
+                        <input type="email" name="email" placeholder="you@example.com" required>
+                    </label>
+                    <label>
+                        <span>Password</span>
+                        <input type="password" name="password" placeholder="Minimum 8 characters" required>
+                    </label>
+                    <label>
+                        <span>Confirm password</span>
+                        <input type="password" name="confirm_password" placeholder="Re-enter password" required>
+                    </label>
+                    <button type="submit" class="primary-btn full-width">Create Account</button>
+                </form>
+                <p class="inline-switch">
+                    Already registered?
+                    <button type="button" class="text-btn" data-auth-tab-trigger="login">Sign in</button>
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

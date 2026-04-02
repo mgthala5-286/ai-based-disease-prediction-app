@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediScope AI | Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body data-page="dashboard" data-auto-scroll="{{ 'true' if report_just_generated else 'false' }}">
+    <div class="background-orb orb-one"></div>
+    <div class="background-orb orb-three"></div>
+    <div class="background-grid"></div>
+
+    <header class="topbar">
+        <div>
+            <p class="eyebrow">MediScope AI</p>
+            <h1 class="topbar-title">Medical Screening Dashboard</h1>
+        </div>
+        <div class="topbar-actions">
+            <div class="user-chip">
+                <span class="user-chip-label">Logged in</span>
+                <strong>{{ user.full_name }}</strong>
+            </div>
+            <form action="{{ url_for('logout') }}" method="post">
+                <button type="submit" class="ghost-btn">Logout</button>
+            </form>
+        </div>
+    </header>
+
+    <main class="dashboard-shell">
+        <section class="dashboard-hero">
+            <article class="hero-summary-card">
+                <p class="eyebrow">Health Workflow</p>
+                <h2>Register, predict symptoms, review guidance, and download the final report.</h2>
+                <p>
+                    This page combines symptom intake, AI-assisted pattern matching, food advice, medication caution points,
+                    and a complete downloadable report in one place.
+                </p>
+            </article>
+
+            <div class="hero-stats">
+                <article class="stat-card">
+                    <span class="stat-label">Date</span>
+                    <strong>{{ today_label }}</strong>
+                </article>
+                <article class="stat-card">
+                    <span class="stat-label">Stored reports</span>
+                    <strong>{{ report_count }}</strong>
+                </article>
+                <article class="stat-card">
+                    <span class="stat-label">Engine</span>
+                    <strong>AI-assisted triage</strong>
+                </article>
+            </div>
+        </section>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-stack">
+                    {% for category, message in messages %}
+                        <div class="flash flash-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <section class="content-grid">
+            <article class="panel-card intake-card">
+                <div class="panel-heading">
+                    <div>
+                        <p class="eyebrow">Patient Intake</p>
+                        <h3>Enter patient details and symptoms</h3>
+                    </div>
+                    <span class="soft-pill">Prediction + report</span>
+                </div>
+
+                <form action="{{ url_for('predict') }}" method="post" class="intake-form">
+                    <div class="form-grid two-columns">
+                        <label>
+                            <span>Patient name</span>
+                            <input type="text" name="patient_name" value="{{ report.patient.name if report else user.full_name }}" required>
+                        </label>
+                        <label>
+                            <span>Age</span>
+                            <input type="number" min="0" max="120" name="age" value="{{ report.patient.age if report else '' }}" placeholder="Years">
+                        </label>
+                        <label>
+                            <span>Gender</span>
+                            {% set current_gender = report.patient.gender if report else '' %}
+                            <select name="gender">
+                                <option value="">Select</option>
+                                <option value="Female" {% if current_gender == 'Female' %}selected{% endif %}>Female</option>
+                                <option value="Male" {% if current_gender == 'Male' %}selected{% endif %}>Male</option>
+                                <option value="Non-binary" {% if current_gender == 'Non-binary' %}selected{% endif %}>Non-binary</option>
+                                <option value="Prefer not to say" {% if current_gender == 'Prefer not to say' %}selected{% endif %}>Prefer not to say</option>
+                            </select>
+                        </label>
+                        <label>
+                            <span>Pregnancy status</span>
+                            {% set current_pregnancy = report.patient.pregnancy_status if report else 'not_applicable' %}
+                            <select name="pregnancy_status">
+                                <option value="not_applicable" {% if current_pregnancy == 'not_applicable' %}selected{% endif %}>Not applicable</option>
+                                <option value="no" {% if current_pregnancy == 'no' %}selected{% endif %}>No</option>
+                                <option value="possible" {% if current_pregnancy == 'possible' %}selected{% endif %}>Possible</option>
+                                <option value="yes" {% if current_pregnancy == 'yes' %}selected{% endif %}>Yes</option>
+                            </select>
+                        </label>
+                        <label>
+                            <span>Temperature (C)</span>
+                            <input type="number" step="0.1" min="34" max="43" name="temperature_c" value="{{ report.submitted.temperature_c if report else '' }}" placeholder="Example 38.4">
+                        </label>
+                        <label>
+                            <span>Duration (days)</span>
+                            <input type="number" min="0" max="60" name="duration_days" value="{{ report.submitted.duration_days if report else '' }}" placeholder="How long">
+                        </label>
+                        <label>
+                            <span>Pain level (0-10)</span>
+                            <input type="number" min="0" max="10" name="pain_level" value="{{ report.submitted.pain_level if report else '' }}" placeholder="Pain score">
+                        </label>
+                        <label>
+                            <span>Known conditions</span>
+                            <input type="text" name="known_conditions" value="{{ report.submitted.known_conditions if report else '' }}" placeholder="Asthma, diabetes, BP, etc.">
+                        </label>
+                    </div>
+
+                    <div class="form-grid">
+                        <label>
+                            <span>Current medicines</span>
+                            <input type="text" name="current_medications" value="{{ report.submitted.current_medications if report else '' }}" placeholder="List tablets, insulin, inhalers, supplements">
+                        </label>
+                        <label>
+                            <span>Allergies</span>
+                            <input type="text" name="allergies" value="{{ report.submitted.allergies if report else '' }}" placeholder="Medicine or food allergies">
+                        </label>
+                    </div>
+
+                    <div class="symptom-toolbar">
+                        <div>
+                            <p class="eyebrow">Symptom Library</p>
+                            <h4>Select symptoms</h4>
+                        </div>
+                        <div class="toolbar-actions">
+                            <input type="search" id="symptom-search" placeholder="Search symptom">
+                            <span class="soft-pill">Selected <strong id="selected-count">0</strong></span>
+                        </div>
+                    </div>
+
+                    {% set chosen_symptoms = report.submitted.symptom_ids if report else [] %}
+                    <div class="symptom-grid">
+                        {% for symptom in symptoms %}
+                            <label class="symptom-chip" data-label="{{ symptom.label|lower }} {{ symptom.cat|lower }}">
+                                <input type="checkbox" name="symptoms" value="{{ symptom.id }}" {% if symptom.id in chosen_symptoms %}checked{% endif %}>
+                                <span class="symptom-chip-title">{{ symptom.label }}</span>
+                                <small>{{ symptom.cat }}</small>
+                            </label>
+                        {% endfor %}
+                    </div>
+
+                    <label>
+                        <span>Symptom notes</span>
+                        <textarea name="notes" rows="5" placeholder="Example: mild fever since yesterday, dry cough at night, sore throat and very tired">{{ report.submitted.notes if report else '' }}</textarea>
+                    </label>
+
+                    <div class="form-actions">
+                        <button type="submit" class="primary-btn">Generate Medical Report</button>
+                        <p class="helper-text">This system gives possible conditions, not a final diagnosis.</p>
+                    </div>
+                </form>
+            </article>
+
+            <article class="panel-card report-card" id="report-view">
+                <div class="panel-heading">
+                    <div>
+                        <p class="eyebrow">Generated Report</p>
+                        <h3>Prediction, care guidance, and final summary</h3>
+                    </div>
+                    {% if report %}
+                        <a href="{{ url_for('download_report', report_id=report.report_id) }}" class="primary-btn link-btn">Download Report</a>
+                    {% endif %}
+                </div>
+
+                {% if report %}
+                    <div class="triage-banner triage-{{ report.triage.style }}">
+                        <div>
+                            <span class="eyebrow">Triage result</span>
+                            <h4>{{ report.triage.title }}</h4>
+                        </div>
+                        <p>{{ report.disclaimer }}</p>
+                    </div>
+
+                    <div class="report-meta">
+                        <div>
+                            <span class="meta-label">Generated</span>
+                            <strong>{{ report.created_at_display }}</strong>
+                        </div>
+                        <div>
+                            <span class="meta-label">Patient</span>
+                            <strong>{{ report.patient.name }}</strong>
+                        </div>
+                        <div>
+                            <span class="meta-label">Detected from notes</span>
+                            <strong>{{ report.submitted.note_matches|join(', ') if report.submitted.note_matches else 'None' }}</strong>
+                        </div>
+                    </div>
+
+                    <div class="prediction-grid">
+                        {% for item in report.predictions %}
+                            <article class="condition-card">
+                                <div class="condition-header">
+                                    <div>
+                                        <h4>{{ item.name }}</h4>
+                                        <p>{{ item.note }}</p>
+                                    </div>
+                                    <div class="score-badge">
+                                        <strong>{{ item.score }}%</strong>
+                                        <span>{{ item.fit }}</span>
+                                    </div>
+                                </div>
+                                <div class="tag-cloud">
+                                    {% for symptom in item.matched %}
+                                        <span class="tag">{{ symptom }}</span>
+                                    {% endfor %}
+                                </div>
+                            </article>
+                        {% endfor %}
+                    </div>
+
+                    <div class="report-two-col">
+                        <section class="sub-card">
+                            <h4>Food Recommendation</h4>
+                            <ul class="styled-list">
+                                {% for item in report.foods %}
+                                    <li>{{ item }}</li>
+                                {% endfor %}
+                            </ul>
+                        </section>
+
+                        <section class="sub-card">
+                            <h4>Medicine Guidance</h4>
+                            <ul class="styled-list">
+                                {% for item in report.med_guidance %}
+                                    <li>{{ item }}</li>
+                                {% endfor %}
+                            </ul>
+                        </section>
+                    </div>
+
+                    <div class="report-two-col">
+                        <section class="sub-card">
+                            <h4>Immediate Next Steps</h4>
+                            <ul class="styled-list">
+                                {% for item in report.next_steps %}
+                                    <li>{{ item }}</li>
+                                {% endfor %}
+                            </ul>
+                        </section>
+
+                        <section class="sub-card">
+                            <h4>Clinical Alerts</h4>
+                            <ul class="styled-list">
+                                {% for item in report.triage.alerts %}
+                                    <li>{{ item }}</li>
+                                {% endfor %}
+                            </ul>
+                        </section>
+                    </div>
+
+                    <section class="sub-card report-summary">
+                        <h4>Final Medical Report Summary</h4>
+                        <div class="summary-grid">
+                            <div>
+                                <span class="meta-label">Symptoms entered</span>
+                                <p>{{ report.submitted.symptoms|join(', ') }}</p>
+                            </div>
+                            <div>
+                                <span class="meta-label">Temperature / duration</span>
+                                <p>{{ report.submitted.temperature_c ~ ' C' if report.submitted.temperature_c else 'Not provided' }} / {{ report.submitted.duration_days ~ ' days' if report.submitted.duration_days else 'Not provided' }}</p>
+                            </div>
+                            <div>
+                                <span class="meta-label">Known conditions</span>
+                                <p>{{ report.submitted.known_conditions or 'None entered' }}</p>
+                            </div>
+                            <div>
+                                <span class="meta-label">Current medicines</span>
+                                <p>{{ report.submitted.current_medications or 'None entered' }}</p>
+                            </div>
+                        </div>
+                        <div class="notes-panel">
+                            <span class="meta-label">Notes</span>
+                            <p>{{ report.submitted.notes or 'No extra notes entered.' }}</p>
+                        </div>
+                    </section>
+                {% else %}
+                    <div class="empty-state">
+                        <h4>No report generated yet</h4>
+                        <p>Complete the intake form, choose symptoms, and click <strong>Generate Medical Report</strong>. Your predictions and download button will appear here.</p>
+                    </div>
+                {% endif %}
+            </article>
+        </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
