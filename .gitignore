@@ -1,5 +1,6 @@
 __pycache__/
 *.pyc
+*.log
 app_check.pyc*
 _portal_data/
 medical_portal.db

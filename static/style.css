@@ -225,21 +225,37 @@ label span { font-size: .94rem; color: var(--muted); font-weight: 700; }
 .triage-routine { background: linear-gradient(135deg, rgba(223,245,232,0.94), rgba(255,255,255,0.96)); border: 1px solid rgba(29,110,67,0.16); }
 .triage-urgent { background: linear-gradient(135deg, var(--urgent), rgba(255,255,255,0.98)); border: 1px solid rgba(186,129,28,0.2); }
 .triage-critical { background: linear-gradient(135deg, var(--critical), rgba(255,255,255,0.98)); border: 1px solid rgba(151,44,36,0.2); }
+.insight-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.insight-card { padding: 18px; border-radius: 20px; background: rgba(255,255,255,0.76); border: 1px solid var(--line); display: grid; gap: 12px; }
+.risk-meter { display: flex; justify-content: space-between; gap: 12px; align-items: center; }
+.risk-meter strong { font-size: 1.18rem; color: var(--ink); }
+.risk-meter span { font-weight: 900; color: var(--brand-deep); }
+.risk-track { height: 10px; overflow: hidden; border-radius: 999px; background: rgba(23,49,71,0.08); }
+.risk-fill { display: block; height: 100%; border-radius: inherit; background: var(--brand); }
+.risk-fill.risk-routine { background: #2f9a62; }
+.risk-fill.risk-urgent { background: #d99228; }
+.risk-fill.risk-critical { background: #d85043; }
+.compact-list { margin: 0; padding-left: 18px; display: grid; gap: 8px; color: var(--muted); font-size: .92rem; }
 .report-meta { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
 .report-meta > div { padding: 16px; border-radius: 18px; background: rgba(255,255,255,0.72); border: 1px solid var(--line); }
 .prediction-grid { display: grid; gap: 14px; }
 .condition-card { border-radius: 22px; padding: 18px; border: 1px solid var(--line); background: linear-gradient(145deg, rgba(255,255,255,0.92), rgba(243,250,248,0.88)); }
 .condition-header { display: flex; justify-content: space-between; gap: 16px; align-items: start; }
 .condition-header p { color: var(--muted); margin-top: 8px; }
+.condition-header .evidence-line { color: var(--brand-deep); font-weight: 800; }
 .score-badge { min-width: 118px; padding: 12px 14px; border-radius: 18px; background: rgba(15,122,122,0.1); display: grid; text-align: right; gap: 4px; }
 .score-badge strong { font-size: 1.2rem; color: var(--brand-deep); }
 .score-badge span { font-size: .78rem; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); }
 .tag-cloud { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
 .tag { display: inline-flex; align-items: center; padding: 8px 12px; border-radius: 999px; background: rgba(255,125,89,0.12); color: #8a3a24; font-size: .9rem; font-weight: 700; }
+.missing-clues { margin-top: 14px; padding: 12px 14px; border-radius: 16px; background: rgba(15,122,122,0.07); border: 1px dashed rgba(15,122,122,0.22); }
+.missing-clues p { color: var(--brand-deep); font-weight: 800; }
 .report-two-col { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 .sub-card { border-radius: 22px; padding: 20px; background: rgba(255,255,255,0.78); }
 .sub-card h4 { margin-bottom: 14px; font-size: 1.32rem; }
 .styled-list { margin: 0; padding-left: 18px; display: grid; gap: 12px; }
+.question-list { margin: 0; padding-left: 22px; display: grid; gap: 12px; }
+.question-list li::marker { color: var(--brand); font-weight: 900; }
 .report-summary { display: grid; gap: 18px; }
 .summary-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
 .summary-grid > div, .notes-panel { padding: 16px; border-radius: 18px; background: rgba(255,255,255,0.72); border: 1px solid var(--line); }
@@ -275,7 +291,7 @@ label span { font-size: .94rem; color: var(--muted); font-weight: 700; }
     .auth-layout, .topbar, .dashboard-shell { width: min(100% - 28px, 100%); }
     .auth-layout { padding: 18px 0 26px; }
     .hero-panel, .auth-panel, .panel-card { padding: 22px; }
-    .feature-list, .symptom-grid, .two-columns, .report-meta, .report-two-col, .summary-grid { grid-template-columns: 1fr; }
+    .feature-list, .symptom-grid, .two-columns, .insight-grid, .report-meta, .report-two-col, .summary-grid { grid-template-columns: 1fr; }
     .topbar, .topbar-actions, .panel-heading, .symptom-toolbar, .toolbar-actions, .form-actions, .condition-header { flex-direction: column; align-items: stretch; }
     #symptom-search { width: 100%; }
     .user-chip { width: 100%; }
