@@ -17,6 +17,9 @@
         .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-bottom: 22px; }
         .card { background: white; border: 1px solid var(--line); border-radius: 18px; padding: 16px; }
         .prediction { border: 1px solid var(--line); border-radius: 18px; padding: 16px; margin-bottom: 12px; }
+        .metric { display: flex; justify-content: space-between; gap: 16px; align-items: center; }
+        .metric strong { color: var(--accent); }
+        .small { font-size: .92rem; color: var(--muted); }
         ul { margin: 0; padding-left: 18px; }
         li + li { margin-top: 8px; }
         .foot { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); }
@@ -41,6 +44,35 @@
             <h2>{{ report.triage.title }}</h2>
             <p>{{ report.disclaimer }}</p>
         </section>
+
+        {% if report.risk_summary or report.evidence_quality %}
+            <section class="grid">
+                {% if report.risk_summary %}
+                    <article class="card">
+                        <h3>Clinical Risk</h3>
+                        <p class="metric"><span>{{ report.risk_summary.band }}</span><strong>{{ report.risk_summary.score }}%</strong></p>
+                        <ul>
+                            {% for item in report.risk_summary.drivers[:3] %}
+                                <li>{{ item }}</li>
+                            {% endfor %}
+                        </ul>
+                    </article>
+                {% endif %}
+                {% if report.evidence_quality %}
+                    <article class="card">
+                        <h3>Input Quality</h3>
+                        <p class="metric"><span>{{ report.evidence_quality.level }}</span><strong>{{ report.evidence_quality.score }}%</strong></p>
+                        {% if report.evidence_quality.improvements %}
+                            <ul>
+                                {% for item in report.evidence_quality.improvements[:3] %}
+                                    <li>{{ item }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </article>
+                {% endif %}
+            </section>
+        {% endif %}
 
         <section class="grid">
             <article class="card">
@@ -72,7 +104,13 @@
                 <article class="prediction">
                     <h3>{{ item.name }} ({{ item.score }}%)</h3>
                     <p>{{ item.note }}</p>
+                    {% if item.evidence %}
+                        <p class="small">{{ item.evidence }}. {{ item.fit }}.</p>
+                    {% endif %}
                     <p><strong>Matched symptoms:</strong> {{ item.matched|join(', ') }}</p>
+                    {% if item.missing_key_symptoms %}
+                        <p><strong>Check next:</strong> {{ item.missing_key_symptoms[:3]|join(', ') }}</p>
+                    {% endif %}
                 </article>
             {% endfor %}
         </section>
@@ -98,6 +136,13 @@
                 <ul>{% for item in report.triage.alerts %}<li>{{ item }}</li>{% endfor %}</ul>
             </article>
         </section>
+
+        {% if report.follow_up_questions %}
+            <section class="card">
+                <h3>Smart Follow-up Questions</h3>
+                <ol>{% for item in report.follow_up_questions %}<li>{{ item }}</li>{% endfor %}</ol>
+            </section>
+        {% endif %}
 
         <section class="card">
             <h3>Notes</h3>

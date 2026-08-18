@@ -50,10 +50,31 @@ SYMPTOMS = [
     {"id": "joint_pain", "label": "Joint Pain", "cat": "General", "keys": ["joint pain", "joint ache"]},
     {"id": "palpitations", "label": "Palpitations", "cat": "Cardio", "keys": ["palpitations", "heart racing", "fast heartbeat"]},
     {"id": "insomnia", "label": "Insomnia", "cat": "Sleep", "keys": ["insomnia", "trouble sleeping"]},
+    {"id": "high_bp_reading", "label": "High BP Reading", "cat": "Cardio", "keys": ["high bp", "high blood pressure", "bp high"]},
+    {"id": "swelling_feet", "label": "Swelling in Feet", "cat": "Kidney/Cardio", "keys": ["swollen feet", "leg swelling", "ankle swelling"]},
+    {"id": "reduced_urine", "label": "Reduced Urine", "cat": "Kidney", "keys": ["less urine", "reduced urine", "low urine"]},
+    {"id": "flank_pain", "label": "Flank or Back Pain", "cat": "Kidney", "keys": ["flank pain", "back pain", "side pain"]},
+    {"id": "yellow_skin", "label": "Yellow Skin/Eyes", "cat": "Liver", "keys": ["yellow eyes", "yellow skin", "jaundice"]},
+    {"id": "dark_urine", "label": "Dark Urine", "cat": "Liver/Urinary", "keys": ["dark urine", "tea colored urine"]},
+    {"id": "appetite_loss", "label": "Appetite Loss", "cat": "General", "keys": ["loss of appetite", "appetite loss", "not hungry"]},
+    {"id": "unexplained_weight_loss", "label": "Unexplained Weight Loss", "cat": "General", "keys": ["weight loss", "losing weight"]},
+    {"id": "weight_gain", "label": "Weight Gain", "cat": "Metabolic", "keys": ["weight gain", "gaining weight"]},
+    {"id": "tremor", "label": "Tremor", "cat": "Neuro", "keys": ["tremor", "shaking hands", "hand shaking"]},
+    {"id": "slow_movement", "label": "Slow Movement", "cat": "Neuro", "keys": ["slow movement", "stiff movement", "body stiffness"]},
+    {"id": "weakness_one_side", "label": "One-sided Weakness", "cat": "Warning", "keys": ["one sided weakness", "face droop", "arm weakness", "leg weakness"]},
+    {"id": "slurred_speech", "label": "Slurred Speech", "cat": "Warning", "keys": ["slurred speech", "speech problem", "cannot speak clearly"]},
+    {"id": "confusion", "label": "Confusion", "cat": "Warning", "keys": ["confusion", "confused", "disoriented"]},
+    {"id": "neck_swelling", "label": "Neck Swelling", "cat": "Endocrine", "keys": ["neck swelling", "goiter", "thyroid swelling"]},
+    {"id": "heat_intolerance", "label": "Heat Intolerance", "cat": "Endocrine", "keys": ["heat intolerance", "too hot", "sweating a lot"]},
+    {"id": "cold_intolerance", "label": "Cold Intolerance", "cat": "Endocrine", "keys": ["cold intolerance", "feeling cold"]},
+    {"id": "breast_lump", "label": "Breast Lump", "cat": "Warning", "keys": ["breast lump", "lump in breast"]},
+    {"id": "nipple_discharge", "label": "Nipple Discharge", "cat": "Warning", "keys": ["nipple discharge", "blood from nipple"]},
+    {"id": "coughing_blood", "label": "Coughing Blood", "cat": "Warning", "keys": ["coughing blood", "blood in sputum", "blood in cough"]},
+    {"id": "night_sweats", "label": "Night Sweats", "cat": "General", "keys": ["night sweats", "sweating at night"]},
 ]
 
 LOOKUP = {item["id"]: item for item in SYMPTOMS}
-RED_FLAGS = {"chest_pain"}
+RED_FLAGS = {"chest_pain", "weakness_one_side", "slurred_speech", "confusion", "coughing_blood"}
 CONDITIONS = []
 
 CONDITIONS += [
@@ -167,6 +188,90 @@ CONDITIONS += [
         "foods": ["Water", "Regular meals", "Lower-caffeine drinks"],
         "meds": ["Breathing exercises and rest may help stress symptoms.", "Do not assume anxiety if chest pain or collapse is present."],
         "steps": ["Reduce caffeine and sleep deprivation where possible.", "Seek urgent evaluation for fainting, severe chest pain, or ongoing breathing trouble."],
+    },
+]
+
+CONDITIONS += [
+    {
+        "slug": "pneumonia",
+        "name": "Pneumonia Warning Pattern",
+        "note": "Fever with cough, breathlessness, chest pain, or low energy can suggest a lower-respiratory infection.",
+        "sym": {"fever": 4, "cough": 4, "shortness_of_breath": 5, "chest_pain": 3, "fatigue": 2, "chills": 2},
+        "foods": ["Warm fluids", "Protein-rich soft meals", "Soup", "Small frequent meals"],
+        "meds": ["Pneumonia may need examination and prescription treatment.", "Do not self-start antibiotics without review."],
+        "steps": ["Same-day clinical review is recommended if breathing is affected.", "Emergency care is needed for chest pain, blue lips, confusion, or severe breathlessness."],
+    },
+    {
+        "slug": "hypertension",
+        "name": "High Blood Pressure Warning Pattern",
+        "note": "High BP readings with headache, chest pain, dizziness, or blurred vision need careful assessment.",
+        "sym": {"high_bp_reading": 5, "headache": 3, "dizziness": 2, "chest_pain": 4, "blurred_vision": 3, "shortness_of_breath": 3, "palpitations": 2},
+        "foods": ["Low-salt meals", "Vegetables", "Fruit", "Water"],
+        "meds": ["Do not double BP tablets without medical advice.", "Carry your BP readings when you meet a clinician."],
+        "steps": ["Repeat BP after resting for 5 minutes.", "Urgent care is needed for chest pain, severe headache, weakness, or breathlessness."],
+    },
+    {
+        "slug": "thyroid",
+        "name": "Thyroid Imbalance Pattern",
+        "note": "Weight change, neck swelling, palpitations, tremor, and heat or cold sensitivity can fit thyroid imbalance.",
+        "sym": {"neck_swelling": 4, "palpitations": 3, "tremor": 3, "weight_gain": 2, "unexplained_weight_loss": 2, "fatigue": 3, "heat_intolerance": 3, "cold_intolerance": 3},
+        "foods": ["Balanced meals", "Protein-rich foods", "Whole grains", "Water"],
+        "meds": ["Thyroid tablets need blood-test confirmation and dose monitoring.", "Avoid unprescribed thyroid supplements."],
+        "steps": ["Arrange thyroid blood tests if symptoms persist.", "Seek urgent review for very fast heartbeat, chest pain, or severe weakness."],
+    },
+    {
+        "slug": "kidney",
+        "name": "Kidney or Urinary Warning Pattern",
+        "note": "Swelling, urine changes, flank pain, fever, or urinary burning can suggest kidney or urinary involvement.",
+        "sym": {"swelling_feet": 4, "reduced_urine": 4, "flank_pain": 3, "burning_urination": 3, "frequent_urination": 2, "fever": 3, "nausea": 2},
+        "foods": ["Water if not fluid-restricted", "Low-salt meals", "Light cooked meals"],
+        "meds": ["Avoid painkiller overuse, especially ibuprofen-like medicines, unless a clinician says they are safe.", "Kidney symptoms may need urine and blood tests."],
+        "steps": ["Same-day review is best for fever with urinary or flank pain.", "Urgent care is needed if urine output drops sharply or swelling worsens."],
+    },
+    {
+        "slug": "liver",
+        "name": "Liver or Jaundice Warning Pattern",
+        "note": "Yellow eyes or skin with dark urine, nausea, appetite loss, or abdominal pain should be medically reviewed.",
+        "sym": {"yellow_skin": 5, "dark_urine": 4, "nausea": 2, "vomiting": 2, "abdominal_pain": 3, "appetite_loss": 3, "fatigue": 2},
+        "foods": ["Small low-fat meals", "Water", "Fruit", "Rice or toast"],
+        "meds": ["Avoid alcohol and avoid extra paracetamol until a clinician checks liver safety.", "Bring a list of medicines and supplements to review."],
+        "steps": ["Arrange clinical review and liver tests promptly.", "Urgent care is needed for confusion, severe abdominal pain, or repeated vomiting."],
+    },
+    {
+        "slug": "stroke",
+        "name": "Stroke Warning Pattern",
+        "note": "One-sided weakness, slurred speech, confusion, or sudden severe dizziness can be stroke warning signs.",
+        "sym": {"weakness_one_side": 5, "slurred_speech": 5, "confusion": 4, "dizziness": 2, "headache": 2, "blurred_vision": 2, "high_bp_reading": 2},
+        "foods": ["Do not delay care for food or home treatment"],
+        "meds": ["Do not self-medicate during possible stroke symptoms.", "Emergency assessment decides safe treatment."],
+        "steps": ["Call emergency services immediately for sudden face, arm, speech, or balance symptoms.", "Note the exact time symptoms started."],
+    },
+    {
+        "slug": "parkinsons",
+        "name": "Parkinsonian Movement Pattern",
+        "note": "Tremor with slow movement, stiffness, or balance change can fit a movement-disorder pattern.",
+        "sym": {"tremor": 5, "slow_movement": 4, "fatigue": 1, "dizziness": 1, "insomnia": 2},
+        "foods": ["Fiber-rich meals", "Water", "Protein-balanced meals"],
+        "meds": ["Movement-disorder medicines require neurologist guidance.", "Do not stop prescribed neurologic medicines suddenly."],
+        "steps": ["Book a non-emergency clinician or neurology review if symptoms are gradual.", "Urgent review is needed for sudden weakness, speech trouble, or confusion."],
+    },
+    {
+        "slug": "breast",
+        "name": "Breast Change Warning Pattern",
+        "note": "A new breast lump, nipple discharge, or unexplained breast change should be assessed in person.",
+        "sym": {"breast_lump": 5, "nipple_discharge": 4, "unexplained_weight_loss": 2, "fatigue": 1, "night_sweats": 1},
+        "foods": ["Balanced meals", "Protein-rich foods", "Fruit and vegetables"],
+        "meds": ["Avoid starting antibiotics or hormone medicines without examination.", "Pain relief choices should consider allergies and current medicines."],
+        "steps": ["Schedule clinical breast examination promptly.", "Seek urgent care for fever with a painful red swollen breast."],
+    },
+    {
+        "slug": "lung",
+        "name": "Chronic Lung Disease Warning Pattern",
+        "note": "Persistent cough with breathlessness, wheeze, weight loss, blood in sputum, or night sweats needs evaluation.",
+        "sym": {"cough": 3, "shortness_of_breath": 4, "wheezing": 3, "coughing_blood": 5, "unexplained_weight_loss": 3, "night_sweats": 3, "chest_pain": 2},
+        "foods": ["Small protein-rich meals", "Warm fluids", "Water"],
+        "meds": ["Use only prescribed inhalers as directed.", "Coughing blood or weight loss should not be treated only with cough syrup."],
+        "steps": ["Arrange medical review for cough lasting more than 2-3 weeks.", "Emergency care is needed for coughing blood, severe breathlessness, or chest pain."],
     },
 ]
 
@@ -303,33 +408,152 @@ def login_required(view):
     return wrapped
 
 
-def score_condition(selected: list[str], condition: dict) -> dict:
+def clamp(value: int, low: int, high: int) -> int:
+    return max(low, min(value, high))
+
+
+def condition_adjustment(condition: dict, context: dict | None) -> int:
+    if not context:
+        return 0
+    slug = condition["slug"]
+    age = context.get("age")
+    days = context.get("days")
+    temp_c = context.get("temp_c")
+    pain = context.get("pain")
+    known_conditions = normalize(context.get("known_conditions", ""))
+    bonus = 0
+
+    if temp_c and temp_c >= 38.0 and slug in {"flu", "covid", "pneumonia", "dengue", "gastroenteritis", "kidney"}:
+        bonus += 7
+    if temp_c and temp_c >= 38.5 and slug in {"cold", "allergy", "thyroid", "parkinsons"}:
+        bonus -= 6
+    if days and days >= 7 and slug in {"pneumonia", "lung", "kidney", "liver"}:
+        bonus += 5
+    if age and age >= 45 and slug in {"diabetes", "hypertension", "stroke", "kidney", "lung"}:
+        bonus += 4
+    if pain and pain >= 8 and slug in {"migraine", "gastroenteritis", "dengue", "kidney", "liver"}:
+        bonus += 3
+    if "diabetes" in known_conditions and slug in {"diabetes", "kidney", "hypertension"}:
+        bonus += 4
+    if any(term in known_conditions for term in ["asthma", "copd", "bronchitis"]) and slug in {"chest", "pneumonia", "lung"}:
+        bonus += 4
+    if any(term in known_conditions for term in ["bp", "blood pressure", "hypertension"]) and slug in {"hypertension", "stroke"}:
+        bonus += 4
+    return bonus
+
+
+def confidence_label(score: int, matched_count: int) -> str:
+    if score >= 78 and matched_count >= 3:
+        return "High confidence"
+    if score >= 58 and matched_count >= 2:
+        return "Moderate confidence"
+    return "Needs more information"
+
+
+def score_condition(selected: list[str], condition: dict, context: dict | None = None) -> dict:
     picked = set(selected)
     matched = [symptom for symptom in condition["sym"] if symptom in picked]
     matched_weight = sum(condition["sym"][symptom] for symptom in matched)
     total_weight = sum(condition["sym"].values())
     overlap = len(matched) / max(len(picked), 1)
     coverage = matched_weight / total_weight
+    selected_weight = sum(condition["sym"].get(symptom, 1) for symptom in picked)
+    specificity = matched_weight / max(selected_weight, 1)
     bonus = min(len(matched), 4) * 4
     penalty = 10 if len(picked) == 1 else 0
-    score = max(5, round((coverage * 55) + (overlap * 28) + bonus - penalty))
+    score = clamp(round((coverage * 50) + (overlap * 22) + (specificity * 16) + bonus + condition_adjustment(condition, context) - penalty), 5, 96)
+    missing = [
+        symptom
+        for symptom, _weight in sorted(condition["sym"].items(), key=lambda item: item[1], reverse=True)
+        if symptom not in picked
+    ][:4]
     return {
         "slug": condition["slug"],
         "name": condition["name"],
         "note": condition["note"],
         "score": score,
-        "fit": "High pattern fit" if score >= 74 and len(matched) >= 3 else "Moderate pattern fit" if score >= 54 and len(matched) >= 2 else "Broad symptom overlap",
+        "fit": confidence_label(score, len(matched)),
+        "evidence": f"{len(matched)} of {len(condition['sym'])} key signals matched",
         "matched": labels(matched),
+        "missing_key_symptoms": labels(missing),
         "foods": condition["foods"],
         "meds": condition["meds"],
         "steps": condition["steps"],
     }
 
 
-def top_conditions(selected: list[str]) -> list[dict]:
-    scored = [score_condition(selected, condition) for condition in CONDITIONS]
+def top_conditions(selected: list[str], context: dict | None = None) -> list[dict]:
+    scored = [score_condition(selected, condition, context) for condition in CONDITIONS]
     scored.sort(key=lambda item: item["score"], reverse=True)
     return scored[:3]
+
+
+def evidence_quality(selected: list[str], detected: list[str], form: dict) -> dict:
+    symptom_points = min(len(selected), 6) * 8
+    field_names = ["age", "duration_days", "temperature_c", "pain_level", "known_conditions", "current_medications", "allergies"]
+    field_points = sum(7 for field in field_names if form.get(field, "").strip())
+    note_points = 9 if form.get("notes", "").strip() else 0
+    detected_points = 5 if detected else 0
+    score = clamp(symptom_points + field_points + note_points + detected_points, 10, 100)
+    missing: list[str] = []
+    if len(selected) < 3:
+        missing.append("Add at least 3 symptoms when possible.")
+    if not form.get("duration_days", "").strip():
+        missing.append("Enter symptom duration.")
+    if not form.get("temperature_c", "").strip():
+        missing.append("Add a measured temperature if fever is possible.")
+    if not form.get("pain_level", "").strip():
+        missing.append("Enter pain severity from 0 to 10.")
+    if not form.get("notes", "").strip():
+        missing.append("Describe the symptom story in notes.")
+    level = "Strong intake detail" if score >= 76 else "Useful intake detail" if score >= 48 else "Limited intake detail"
+    return {"score": score, "level": level, "improvements": missing[:5]}
+
+
+def clinical_risk_summary(selected: list[str], triage_result: dict, age: int | None, days: int | None, temp_c: float | None, pain: int | None, pregnant: str) -> dict:
+    base = {"routine": 28, "urgent": 66, "critical": 90}.get(triage_result["style"], 35)
+    drivers = list(triage_result["alerts"])
+    if age and age >= 65:
+        base += 6
+        drivers.append("Age over 65 raises clinical risk.")
+    if days and days >= 5:
+        base += 5
+        drivers.append("Symptoms have lasted 5 or more days.")
+    if temp_c and temp_c >= 39.0:
+        base += 6
+        drivers.append("Temperature is high.")
+    if pain and pain >= 8:
+        base += 5
+        drivers.append("Pain score is severe.")
+    if pregnant in {"yes", "possible"}:
+        base += 5
+        drivers.append("Pregnancy status changes triage and medicine safety.")
+    if set(selected) & RED_FLAGS:
+        base += 8
+        drivers.append("A red-flag symptom was selected.")
+    score = clamp(base, 5, 98)
+    band = "High" if score >= 75 else "Medium" if score >= 45 else "Low"
+    return {"score": score, "band": band, "drivers": uniq(drivers)[:6]}
+
+
+def follow_up_questions(results: list[dict], selected: list[str], form: dict, age: int | None, days: int | None, temp_c: float | None, pain: int | None) -> list[str]:
+    questions: list[str] = []
+    picked = set(selected)
+    if age is None:
+        questions.append("Confirm the patient's age because age changes risk for infection, stroke, BP, kidney, and heart patterns.")
+    if days is None:
+        questions.append("How many days have the symptoms been present, and are they improving or worsening?")
+    if temp_c is None and any(item["slug"] in {"flu", "covid", "pneumonia", "dengue", "kidney", "gastroenteritis"} for item in results):
+        questions.append("Measure temperature with a thermometer to separate fever patterns from non-fever patterns.")
+    if pain is None and any(symptom in picked for symptom in ["headache", "abdominal_pain", "chest_pain", "flank_pain"]):
+        questions.append("Rate pain from 0 to 10 and note whether it is sudden, severe, or spreading.")
+    for item in results[:2]:
+        missing = item.get("missing_key_symptoms", [])[:2]
+        if missing:
+            questions.append(f"For {item['name']}, check whether {', '.join(missing)} is also present.")
+    if picked & RED_FLAGS:
+        questions.append("For red-flag symptoms, confirm when they started and whether emergency care is already being arranged.")
+    return uniq(questions)[:6]
 
 
 def triage(selected: list[str], age: int | None, days: int | None, temp_c: float | None, pain: int | None, pregnant: str) -> dict:
@@ -338,10 +562,14 @@ def triage(selected: list[str], age: int | None, days: int | None, temp_c: float
     style = "routine"
     title = "Home care and monitoring may be reasonable."
 
-    if picked & RED_FLAGS or {"shortness_of_breath", "chest_pain"} <= picked:
+    if picked & RED_FLAGS:
         style = "critical"
         title = "Emergency evaluation is recommended now."
-        alerts.append("Chest pain or breathing difficulty should not be managed only at home.")
+        alerts.append("Red-flag symptoms such as chest pain, one-sided weakness, speech change, confusion, or coughing blood should not be managed only at home.")
+    elif {"shortness_of_breath", "chest_pain"} <= picked:
+        style = "critical"
+        title = "Emergency evaluation is recommended now."
+        alerts.append("Chest pain with breathing difficulty should not be managed only at home.")
     elif {"shortness_of_breath", "wheezing"} <= picked or ("fever" in picked and temp_c and temp_c >= 39.0):
         style = "urgent"
         title = "Urgent same-day clinical review is recommended."
@@ -418,11 +646,21 @@ def build_report(user: dict, form: dict, selected: list[str], detected: list[str
     if temp_c is not None and temp_c >= 37.8:
         picked.add("fever")
     selected = ordered_ids(picked)
-    results = top_conditions(selected)
-    triage_result = triage(selected, age, days, temp_c, pain, pregnant)
     current_meds = form.get("current_medications", "").strip()
     allergies = form.get("allergies", "").strip()
     known_conditions = form.get("known_conditions", "").strip()
+    context = {
+        "age": age,
+        "days": days,
+        "temp_c": temp_c,
+        "pain": pain,
+        "pregnant": pregnant,
+        "known_conditions": known_conditions,
+    }
+    results = top_conditions(selected, context)
+    triage_result = triage(selected, age, days, temp_c, pain, pregnant)
+    quality = evidence_quality(selected, detected, form)
+    risk = clinical_risk_summary(selected, triage_result, age, days, temp_c, pain, pregnant)
     return {
         "created_at_display": now.strftime("%d %b %Y, %I:%M %p"),
         "created_at_iso": now.isoformat(timespec="seconds"),
@@ -447,7 +685,10 @@ def build_report(user: dict, form: dict, selected: list[str], detected: list[str
             "allergies": allergies,
         },
         "triage": triage_result,
+        "risk_summary": risk,
+        "evidence_quality": quality,
         "predictions": results,
+        "follow_up_questions": follow_up_questions(results, selected, form, age, days, temp_c, pain),
         "foods": gather_foods(results),
         "med_guidance": gather_meds(results, pregnant, current_meds, allergies, known_conditions),
         "next_steps": gather_steps(results, triage_result),
